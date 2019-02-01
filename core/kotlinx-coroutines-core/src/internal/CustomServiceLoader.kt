@@ -37,10 +37,8 @@ internal object CustomServiceLoader {
         }
         val providers = mutableListOf<S>()
         urls.forEach {
-            val providerName = parse(service, it)
-            if (providerName.isNotEmpty()) {
-                providers.add(getProviderInstance(providerName, loader, service))
-            }
+            val providerNames = parse(service, it)
+            providers.addAll(providerNames.map { getProviderInstance(it, loader, service) })
         }
         return providers
     }
@@ -64,7 +62,7 @@ internal object CustomServiceLoader {
         }
     }
 
-    private fun <S> parse(service: Class<S>, url: URL): String {
+    private fun <S> parse(service: Class<S>, url: URL): List<String> {
         try {
             val string = url.toString()
             // the syntax of JAR URL is: jar:<url>!/{entry}
@@ -81,10 +79,10 @@ internal object CustomServiceLoader {
         }
     }
 
-    private fun parseFile(service: Class<*>, r: BufferedReader): String {
-        var line = ""
-        while (line.isEmpty()) {
-            line = r.readLine()
+    private fun parseFile(service: Class<*>, r: BufferedReader): List<String> {
+        val names = mutableSetOf<String>()
+        while (true) {
+            var line = r.readLine() ?: break
             val commentPos = line.indexOf('#')
             if (commentPos >= 0) line = line.substring(0, commentPos)
             line = line.trim()
@@ -94,9 +92,10 @@ internal object CustomServiceLoader {
                 } catch (e: IllegalArgumentException) {
                     error(service, "Illegal configuration-file syntax", e)
                 }
+                names.add(line)
             }
         }
-        return line
+        return names.toList()
     }
 
     private fun error(service: Class<*>, msg: String, e: Throwable): Nothing =
