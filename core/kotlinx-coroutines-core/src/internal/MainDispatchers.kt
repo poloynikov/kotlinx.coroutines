@@ -12,7 +12,10 @@ internal object MainDispatcherLoader {
     private fun loadMainDispatcher(): MainCoroutineDispatcher {
         return try {
             val factories = MainDispatcherFactory::class.java.let { clz ->
-                CustomServiceLoader.load(clz, clz.classLoader)
+                if (CUSTOM_SERVICE_LOADER_ENABLED)
+                    CustomServiceLoader.load(clz, clz.classLoader)
+                else
+                    ServiceLoader.load(clz, clz.classLoader).toList()
             }
             factories.maxBy { it.loadPriority }?.tryCreateDispatcher(factories)
                 ?: MissingMainCoroutineDispatcher(null)

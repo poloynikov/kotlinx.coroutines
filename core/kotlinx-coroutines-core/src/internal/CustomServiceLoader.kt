@@ -18,6 +18,14 @@ import java.io.BufferedReader
  */
 private const val PREFIX: String = "META-INF/services/"
 
+/**
+ * Name of the boolean property that enables using of [CustomServiceLoader].
+*/
+internal const val CUSTOM_SERVICE_LOADER_PROPERTY_NAME = "kotlinx.coroutines.serviceLoader"
+
+@JvmField
+internal val CUSTOM_SERVICE_LOADER_ENABLED = systemProp(CUSTOM_SERVICE_LOADER_PROPERTY_NAME, true)
+
 internal object CustomServiceLoader {
 
     fun <S> load(service: Class<S>, loader: ClassLoader): List<S> {
