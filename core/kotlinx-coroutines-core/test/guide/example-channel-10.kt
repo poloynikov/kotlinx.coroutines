@@ -27,7 +27,7 @@ fun main() = runBlocking<Unit> {
     println("Next element is available immediately after large consumer delay: $nextElement")
     // Note that the pause between `receive` calls is taken into account and next element arrives faster
     nextElement = withTimeoutOrNull(60) { tickerChannel.receive() } 
-    println("Next element is ready in 50ms after consumer pause in 150ms: $nextElement")
+    println("Next element is ready in 60ms after consumer pause in 150ms: $nextElement")
 
     tickerChannel.cancel() // indicate that no more elements are needed
 }
