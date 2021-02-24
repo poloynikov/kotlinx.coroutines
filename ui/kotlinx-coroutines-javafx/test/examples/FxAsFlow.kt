@@ -24,7 +24,7 @@ class FxAsFlowApp: Application(), CoroutineScope {
 
     private var job = Job()
     override val coroutineContext: CoroutineContext
-        get() = JavaFx + job
+        get() = Dispatchers.Main + job
 
     private val incrementButton = Button("Increment")
     private val incrementLabel = Label("")
